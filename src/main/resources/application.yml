@@ -1,0 +1,6 @@
+server:
+  port: 40002
+spring:
+  config:
+    import: application-home.yml
+

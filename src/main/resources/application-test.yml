@@ -1,0 +1,5 @@
+ha:
+  common:
+    url: http://xxxx
+    url-ws: ws://xxxx
+    token: token....

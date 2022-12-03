@@ -69,7 +69,7 @@ public interface HaService {
      * url:     /api/services/mqtt/publish
      * data:    {"payload": "OFF", "topic": "home/fridge", "retain": "True"}
      *
-     * @return 服务集合
+     * @return Returns a list of states that have changed while the service was being executed
      */
     List<State> callService(String domain, String item, Map<String, Object> data);
 }

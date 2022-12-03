@@ -47,7 +47,7 @@ class HaServiceImplTest {
         log.info("{}", state);
     }
 
-    @Test
+    // @Test
     public void test_create_state() {
         String entityId = "input_text.xiaoai_tts_2";
         var ns = new StateFull(entityId, "测试一下rest接口", null, Map.of("hello", "创建成功"), entityId, "小爱tts2");
@@ -60,12 +60,12 @@ class HaServiceImplTest {
     @Test
     public void test_call_service() {
         haService.callService("xiaomi_miot", "intelligent_speaker", Map.of(
-                "entity_id", "media_player.xiaomi_xxx_play_control",
+                "entity_id", "media_player.xiaomi_l05c_6c8c_play_control",
                 "text", "你好啊, 这里是 media_player.xiaomi_xxx_play_control"
         )).forEach(state -> log.info("result: {}", state));
 
         haService.callService("xiaomi_miot", "intelligent_speaker", Map.of(
-                "entity_id", "media_player.xiaomi_xxx_play_control",
+                "entity_id", "media_player.xiaomi_l05c_6c8c_play_control",
                 "text", "报时",
                 "execute", "true"
         )).forEach(state -> log.info("result: {}", state));

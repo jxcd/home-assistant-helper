@@ -3,4 +3,11 @@ server:
 spring:
   config:
     import: application-home.yml
-
+  application:
+    name: home-assistant-helper
+logging:
+  pattern:
+    console: "[%-12d{HH:mm:ss.SSS}][%-5level][%-50logger{50} :%-3L][%-25thread] %msg%n"
+    file: "[%-12d{HH:mm:ss.SSS}][%-5level][%-50logger{50} :%-3L][%-25thread] %msg%n"
+  file:
+    name: logs/${spring.application.name}.log

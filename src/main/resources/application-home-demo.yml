@@ -1,5 +1,5 @@
 ha:
   common:
     url: http://xxxx
-    url-ws: ws://xxxx
+    url-ws: ws://xxxx/api/websocket
     token: token....

@@ -1,6 +1,7 @@
 package com.me.project.hah.task;
 
 import com.me.project.hah.dto.ScheduleTaskConfig;
+import com.me.project.hah.util.ConfigFileUtil;
 import groovy.lang.GroovyShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,21 +10,16 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 定时检索配置文件, 存在则加载其中的内容
@@ -41,37 +37,15 @@ public class LoadTask {
     private static final Logger log = LoggerFactory.getLogger(LoadTask.class);
 
     @Autowired
-    TaskScheduler taskScheduler;
+    private TaskScheduler taskScheduler;
 
-    Path confFile = Paths.get("task/0.conf");
-    private FileTime last = null;
+    private final Path confFile = Paths.get("task/0.conf");
     private final Map<ScheduleTaskConfig, ScheduledFuture<?>> taskCache = new ConcurrentHashMap<>();
 
     @Scheduled(cron = "0 * * * * ? ")
     public void loadTask() {
-        boolean exists = Files.exists(confFile);
-        if (!exists) {
-            log.info("not find 0.conf, {}", confFile.toAbsolutePath());
-            return;
-        }
-
-        FileTime lastModifiedTime = null;
-        try {
-            lastModifiedTime = Files.getLastModifiedTime(confFile);
-            if (Objects.equals(this.last, lastModifiedTime)) {
-                log.debug("0.conf not change, skip");
-                return;
-            }
-            log.info("0.conf is changed, parse");
-        } catch (IOException e) {
-            log.warn("load lastModifiedTime error, {}, e: {}", confFile.toAbsolutePath(), e.getMessage());
-        }
-
-        try (Stream<String> lines = Files.lines(confFile)) {
-            Set<ScheduleTaskConfig> lineConfigSet = lines
-                    .filter(StringUtils::hasText)
-                    .map(this::parseLine).filter(Objects::nonNull)
-                    .peek(this::schedule).collect(Collectors.toSet());
+        ConfigFileUtil.ifModify(confFile, this::parseLine, configs -> {
+            Set<ScheduleTaskConfig> lineConfigSet = configs.stream().peek(this::schedule).collect(Collectors.toSet());
 
             taskCache.forEach((config, future) -> {
                 if (!lineConfigSet.contains(config) && future != null) {
@@ -80,12 +54,7 @@ public class LoadTask {
                     log.info("remove schedule task [{}] by config {}", future, config);
                 }
             });
-
-        } catch (IOException e) {
-            log.warn("failed read lines, e: {}", e.getMessage());
-        }
-
-        this.last = lastModifiedTime;
+        });
     }
 
     private ScheduleTaskConfig parseLine(String line) {

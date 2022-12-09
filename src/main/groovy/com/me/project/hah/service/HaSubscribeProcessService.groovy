@@ -7,4 +7,7 @@ interface HaSubscribeProcessService {
 
     void stateChanged(StateChange change)
 
+    void subscribe(String entityId, Closure listener)
+
+    void unsubscribe(String entityId, Closure listener)
 }

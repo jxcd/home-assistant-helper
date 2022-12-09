@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class LoadListener {
     private static final Logger log = LoggerFactory.getLogger(LoadListener.class);
 
-    private final Path confFile = Paths.get("listener/0.conf");
+    private final Path confFile = Paths.get("config/listener/0.conf");
 
     @Autowired
     private HaSubscribeProcessService subscribeProcessService;

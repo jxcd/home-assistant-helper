@@ -39,7 +39,7 @@ public class LoadTask {
     @Autowired
     private TaskScheduler taskScheduler;
 
-    private final Path confFile = Paths.get("task/0.conf");
+    private final Path confFile = Paths.get("config/task/0.conf");
     private final Map<ScheduleTaskConfig, ScheduledFuture<?>> taskCache = new ConcurrentHashMap<>();
 
     @Scheduled(cron = "0 * * * * ? ")

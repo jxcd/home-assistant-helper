@@ -3,14 +3,14 @@ package com.me.project.hah.config;
 import com.me.project.hah.connector.ws.WsClientEndpoint;
 import com.me.project.hah.dto.conf.HaConf;
 import com.me.project.hah.util.ThreadUtil;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.Session;
-import jakarta.websocket.WebSocketContainer;
 import java.net.URI;
 
 /**
@@ -36,6 +36,9 @@ public class WebSocketConfig {
      */
     private void initHaWsConnect(String url, WsClientEndpoint endpoint) {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.setDefaultMaxTextMessageBufferSize(128 * 1024);
+        container.setDefaultMaxBinaryMessageBufferSize(128 * 1024);
+        container.setDefaultMaxSessionIdleTimeout(120 * 1000);
         Runnable wsConnTask = () -> {
             while (true) {
                 try (Session session = container.connectToServer(endpoint, new URI(url))) {

@@ -6,13 +6,15 @@ import com.me.project.hah.service.CacheService
 import com.me.project.hah.service.HaSubscribeProcessService
 import com.me.project.hah.service.WsMessageService
 import com.me.project.hah.util.JsonUtil
+import jakarta.annotation.PostConstruct
+import jakarta.websocket.Session
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Service
 
-import jakarta.annotation.PostConstruct
-import jakarta.websocket.Session
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
@@ -25,6 +27,8 @@ class WsMessageServiceImpl implements WsMessageService {
     CacheService cacheService
     @Autowired
     HaSubscribeProcessService subscribeProcessService
+    @Autowired
+    TaskScheduler taskScheduler
 
     /**
      * 内部处理器在这里添加
@@ -68,6 +72,9 @@ class WsMessageServiceImpl implements WsMessageService {
         innerConsumer.put("auth_ok", { result, session ->
             log.info("auth ok...")
 
+            // 发送心跳
+            session.basicRemote.sendText """{"id":${wsId()},"type":"ping"}"""
+
             // 订阅状态改变, 先不考虑失败
             def stateChanged = """{"id":${wsId()},"type":"subscribe_events","event_type":"state_changed"}"""
             session.basicRemote.sendText(stateChanged)
@@ -78,15 +85,20 @@ class WsMessageServiceImpl implements WsMessageService {
         })
         // auth end
 
+        // ping/pong
+        innerConsumer.put("pong", { result, session ->
+            Runnable ping = () -> session.basicRemote.sendText """{"id":${wsId()},"type":"ping"}"""
+            taskScheduler.schedule(ping, Instant.now().plusSeconds(30))
+        })
+
         // request result
         innerConsumer.put("result", { result, session ->
-            log.info("command ${result.id} seccuess ${result.seccuess}")
+            log.info("command ${result.id} seccuess ${result}")
         })
 
         // state changed
         innerConsumer.put("event", { message, session ->
-            def data = message.event?.data as Map
-            data == null ?: subscribeProcessService.stateChanged(JsonUtil.conventObj(data, StateChange))
+            message.event?.data?.with { JsonUtil.conventObj(it, StateChange) }?.with { subscribeProcessService.stateChanged(it) }
         })
 
         // trigger
@@ -100,6 +112,6 @@ class WsMessageServiceImpl implements WsMessageService {
     }
 
     Integer wsId() {
-        cacheService.getSeq("ws-id")
+        cacheService.getSeq("ws-id", Integer.MAX_VALUE, 1)
     }
 }

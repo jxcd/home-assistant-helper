@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 import static org.springframework.http.HttpMethod.GET
 import static org.springframework.http.HttpMethod.POST

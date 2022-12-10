@@ -1,7 +1,6 @@
 package com.me.project.hah.service.impl
 
 import com.me.project.hah.dto.conf.HaConf
-import com.me.project.hah.dto.ha.State
 import com.me.project.hah.dto.ha.StateChange
 import com.me.project.hah.service.CacheService
 import com.me.project.hah.service.HaSubscribeProcessService
@@ -12,13 +11,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import javax.annotation.PostConstruct
-import javax.websocket.Session
+import jakarta.annotation.PostConstruct
+import jakarta.websocket.Session
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class WsMessageServiceImpl implements WsMessageService {
-    private static final Logger log = LoggerFactory.getLogger(WsMessageServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(WsMessageServiceImpl.class)
 
     @Autowired
     HaConf haConf

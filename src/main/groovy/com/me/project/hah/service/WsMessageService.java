@@ -1,6 +1,6 @@
 package com.me.project.hah.service;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 /**
  * @author cwj

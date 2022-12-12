@@ -36,6 +36,7 @@ docker run -d \
     --restart=always \
     --name=${app} \
     -p 40004:40002 \
+    -e TZ=Asia/Shanghai \
     -v /jdata/docker/${app}/config:/app/config \
     -v /jdata/docker/${app}/tmp:/tmp \
     -v /jdata/docker/${app}/logs:/app/logs \

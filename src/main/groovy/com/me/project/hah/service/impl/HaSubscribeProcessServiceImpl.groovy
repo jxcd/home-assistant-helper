@@ -23,7 +23,11 @@ class HaSubscribeProcessServiceImpl implements HaSubscribeProcessService {
             def newState = change.newState()
             def oldState = change.oldState()
             log.info("entity ${change.entityId()} from ${oldState.state()} change to ${newState.state()}")
-            it.each { it(newState, oldState) }
+            try {
+                it.each { it(newState, oldState) }
+            } catch (e) {
+                log.error("{} stateChanged error, e: {}", change.entityId(), e.getMessage(), e)
+            }
         }
     }
 

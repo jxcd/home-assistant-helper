@@ -43,7 +43,7 @@ public class LoadListener {
             delListener.forEach(listener -> {
                 var closure = subscribeCache.remove(listener);
                 if (closure != null) {
-                    subscribeProcessService.unsubscribe(listener.getEntityId(), closure);
+                    subscribeProcessService.unsubscribe(listener.entityId(), closure);
                     log.info("remove stateChanged listener [{}] by listener {}", closure, listener);
                 }
             });
@@ -55,12 +55,12 @@ public class LoadListener {
 
                 Closure<?> closure;
                 try {
-                    closure = (Closure<?>) new GroovyShell().evaluate(new File(listener.getProcessFile()));
+                    closure = (Closure<?>) new GroovyShell().evaluate(new File(listener.processFile()));
                 } catch (IOException e) {
-                    log.error("error eval closure from {}, e: {}", listener.getProcessFile(), e.getMessage());
+                    log.error("error eval closure from {}, e: {}", listener.processFile(), e.getMessage());
                     return;
                 }
-                subscribeProcessService.subscribe(listener.getEntityId(), closure);
+                subscribeProcessService.subscribe(listener.entityId(), closure);
                 subscribeCache.put(listener, closure);
                 log.info("register stateChanged listener [{}] by listener {}", closure, listener);
             });

@@ -45,7 +45,7 @@ return { State newState, State oldState ->
     }
 
     if (msg != null) {
-        SpringTool.getBean(HaService).callService("notify", "mobile_app_sm_n9760", Map.of("title", "电量提醒", "message", msg))
+        SpringTool.getBean(HaService).callService("notify", "mobile_app_sm_n9760", Map.of("title", "电量提醒", "message", msg as String))
         log.info("push msg: {}", msg)
     }
 

@@ -2,7 +2,7 @@ server:
   port: 40002
 spring:
   config:
-    import: application-home.yml
+    import: application-home-demo.yml
   application:
     name: home-assistant-helper
 logging:
